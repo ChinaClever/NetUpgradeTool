@@ -1,11 +1,11 @@
-﻿#ifndef UDPSENTSOCKET_H
+#ifndef UDPSENTSOCKET_H
 #define UDPSENTSOCKET_H
 
 #include <QtCore>
 #include <QtNetwork>
 
 #define UDP_HB_PORT     38725 /*UDP心跳端口*/
-#define UDP_SENT_PORT   38750 /*UDP发送端口*/
+#define UDP_SENT_PORT   1750 /*UDP发送端口*/
 
 class UdpSentSocket : public QObject
 {

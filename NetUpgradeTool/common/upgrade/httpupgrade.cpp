@@ -3,7 +3,7 @@ extern void udp_sent_data(const QString &ip, uchar *buf, ushort len);
 
 HttpUpgrade::HttpUpgrade(QObject *parent) : UpgradeThread(parent)
 {
-    quint16 port = 8080;
+    quint16 port = 1180;
     mDaemon = new HttpDaemon(port, this);
     connect(mDaemon, SIGNAL(progressSig(float,QString)), this, SLOT(subProgressSlot(float,QString)));
 }
