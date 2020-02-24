@@ -41,61 +41,27 @@
       <string>设备选择区</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QRadioButton" name="ipRadio">
-        <property name="maximumSize">
-         <size>
-          <width>120</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>Arial</family>
-          <pointsize>11</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>IP-PDU/MPDU</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="1">
-       <widget class="QLabel" name="label">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>100</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>微软雅黑</family>
-          <pointsize>11</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>用户名</string>
-        </property>
+       <widget class="QComboBox" name="ChooseTypeBox">
+        <item>
+         <property name="text">
+          <string>IP-PDU/MPDU</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ZPDU/RPDU</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>SPDU</string>
+         </property>
+        </item>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QLineEdit" name="userEdit">
+      <item row="1" column="3">
+       <widget class="QLineEdit" name="pwdEdit">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -125,45 +91,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="3" rowspan="2">
-       <widget class="QPushButton" name="okBtn">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>30</width>
-          <height>50</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>确认</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QRadioButton" name="rzRadio">
-        <property name="maximumSize">
-         <size>
-          <width>120</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>Arial</family>
-          <pointsize>11</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>RPDU/ZPDU</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
+      <item row="1" column="2">
        <widget class="QLabel" name="label_2">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -194,8 +122,8 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="2">
-       <widget class="QLineEdit" name="pwdEdit">
+      <item row="0" column="3">
+       <widget class="QLineEdit" name="userEdit">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -222,6 +150,69 @@
         </property>
         <property name="text">
          <string>admin</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>用户名</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4" rowspan="2">
+       <widget class="QPushButton" name="okBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>30</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>确认</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>升级方式</string>
         </property>
        </widget>
       </item>

@@ -3,6 +3,7 @@
 
 #include "exports/exportdlg.h"
 #include "tcpupgrade.h"
+#include "httpupgrade.h"
 
 namespace Ui {
 class UpgradeWid;
@@ -38,6 +39,7 @@ private:
     ExportDlg *mExportDlg;
     TcpUpgrade *mTcpThread;
     TftpUpgrade *mTftpThread;
+    HttpUpgrade *mHttpThread;
     UpgradeThread *mUpgradeThread;
 };
 

@@ -22,9 +22,9 @@ protected:
 
 private slots:
     void timeoutDone(void);
-    void on_ipRadio_clicked(bool checked);
-    void on_rzRadio_clicked(bool checked);
     void on_okBtn_clicked();
+
+    void on_ChooseTypeBox_currentTextChanged(const QString &text);
 
 public slots:
     void languageChanged();

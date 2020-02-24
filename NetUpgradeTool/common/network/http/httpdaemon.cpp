@@ -1,4 +1,4 @@
-#include <QFile>
+﻿#include <QFile>
 #include <QDataStream>
 #include <QTcpSocket>
 #include <QDebug>
@@ -43,8 +43,8 @@ HttpDaemon::HttpDaemon(quint16 port, QObject* parent)
     contentTypes["zip"] = "application/zip";
     contentTypes["gzip"] = "application/x-gzip";
     contentTypes["torrent"] = "application/x-bittorrent";
-    contentTypes["pdf"] = "application/pdf";
-    contentTypes["pdf"] = "application/pdf";
+    contentTypes["bin"] = "application/octet-stream";
+    //contentTypes["pdf"] = "application/pdf";
     listen(QHostAddress::Any, port);
     QObject::connect(this,SIGNAL(newConnection()),this,SLOT(incomingConnection()));
     //    qDebug() << isListening();

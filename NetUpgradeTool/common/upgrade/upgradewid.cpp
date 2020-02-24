@@ -1,4 +1,4 @@
-#include "upgradewid.h"
+﻿#include "upgradewid.h"
 #include "ui_upgradewid.h"
 #include "msgbox.h"
 
@@ -12,6 +12,7 @@ UpgradeWid::UpgradeWid(QWidget *parent) :
     mExportDlg = new ExportDlg(this);
     mTcpThread = new TcpUpgrade(this);
     mTftpThread = new TftpUpgrade(this);
+    mHttpThread = new HttpUpgrade(this);
 
     timer = new QTimer(this);
     timer->start(500);
@@ -94,9 +95,10 @@ void UpgradeWid::on_updateBtn_clicked()
     switch (mData->devtype) {
     case 0: mUpgradeThread = mTftpThread; break;
     case 1: mUpgradeThread = mTcpThread; break;
+    case 2: mUpgradeThread = mHttpThread; break;
 
     default:
-        break;
+       mUpgradeThread = mTftpThread; break;
     }
 
 

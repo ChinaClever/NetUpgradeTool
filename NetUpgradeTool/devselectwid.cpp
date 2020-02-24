@@ -11,7 +11,6 @@ DevSelectWid::DevSelectWid(QWidget *parent) :
     timer = new QTimer(this);
     timer->start(200);
     connect(timer, SIGNAL(timeout()),this, SLOT(timeoutDone()));
-    on_ipRadio_clicked(true);
     mCount = 1;
 
 //    ui->groupBox->setTitle("Type Of Equipment Selection Zone");
@@ -29,24 +28,6 @@ DevSelectWid::~DevSelectWid()
 void DevSelectWid::timeoutDone(void)
 {
     this->setDisabled(mData->isRun);
-}
-
-void DevSelectWid::on_ipRadio_clicked(bool checked)
-{
-    if(checked) {
-        mData->devtype = 0;
-        ui->userEdit->setEnabled(false);
-        ui->pwdEdit->setEnabled(false);
-    }
-}
-
-void DevSelectWid::on_rzRadio_clicked(bool checked)
-{
-    if(checked) {
-        mData->devtype = 1;
-        ui->userEdit->setEnabled(true);
-        ui->pwdEdit->setEnabled(true);
-    }
 }
 
 bool DevSelectWid::checkInput()
@@ -76,8 +57,7 @@ bool DevSelectWid::checkInput()
 
 void DevSelectWid::setenabled(bool e)
 {
-    ui->ipRadio->setEnabled(e);
-    ui->rzRadio->setEnabled(e);
+    ui->ChooseTypeBox->setEnabled(e);
     ui->userEdit->setEnabled(e);
     ui->pwdEdit->setEnabled(e);
 }
@@ -88,7 +68,7 @@ void DevSelectWid::on_okBtn_clicked()
     QString str = tr("修改");
     //QString str = tr("modify");
     if(mCount++ %2) {
-        if(mData->devtype) {
+        if(1 == mData->devtype) {//只有当升级方式为tcp时，才需要账号和密码
             if(!checkInput()) {
                 mCount--; return;
             }
@@ -106,4 +86,41 @@ void DevSelectWid::on_okBtn_clicked()
 void DevSelectWid::languageChanged()
 {
     ui->retranslateUi(this);
+}
+
+void DevSelectWid::on_ChooseTypeBox_currentTextChanged(const QString &text)
+{
+    int index = 0;
+    if(text == "IP-PDU/MPDU")
+        index = 0;
+    else if(text == "ZPDU/RPDU")
+        index = 1;
+    else
+        index = 2;
+    switch(index){
+        case 0:{
+            mData->devtype = index;
+            ui->userEdit->setEnabled(false);
+            ui->pwdEdit->setEnabled(false);
+            break;
+        }
+        case 1:{
+            mData->devtype = index;
+            ui->userEdit->setEnabled(true);
+            ui->pwdEdit->setEnabled(true);
+            break;
+        }
+        case 2:{
+            mData->devtype = index;
+            ui->userEdit->setEnabled(false);
+            ui->pwdEdit->setEnabled(false);
+            break;
+        }
+        default:{
+            mData->devtype = 0;
+            ui->userEdit->setEnabled(false);
+            ui->pwdEdit->setEnabled(false);
+            break;
+        }
+    }
 }
