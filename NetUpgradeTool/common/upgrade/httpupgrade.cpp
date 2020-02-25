@@ -1,4 +1,4 @@
-#include "httpupgrade.h"
+﻿#include "httpupgrade.h"
 extern void udp_sent_data(const QString &ip, uchar *buf, ushort len);
 
 HttpUpgrade::HttpUpgrade(QObject *parent) : UpgradeThread(parent)
@@ -19,7 +19,19 @@ bool HttpUpgrade::upload(const QString &file, const QString &ip)
     char *msg = "http upgrade";
     udp_sent_data(ip, (uchar *)msg, strlen(msg));
     mDaemon->shareFile(file);
-    return true;
+    mDaemon->Sleep(50000);
+    int count = 0;
+    while(!mDaemon->mRet && count < 100)
+    {
+        if(!mDaemon->mRet)
+        {
+            count++;
+            mDaemon->Sleep(1000);
+            continue;
+        }
+    }
+
+    return mDaemon->mRet;
 }
 
 void HttpUpgrade::breakSent()

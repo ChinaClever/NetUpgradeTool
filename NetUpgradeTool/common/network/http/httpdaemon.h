@@ -1,4 +1,4 @@
-#ifndef HTTPDEAMON_H
+﻿#ifndef HTTPDEAMON_H
 #define HTTPDEAMON_H
 
 #include <QObject>
@@ -24,6 +24,8 @@ public:
     void cleanFiles();
 
     void breakDown() {pause();}
+    void Sleep(int msec);
+    bool mRet;
 
 signals:
     void progressSig(float,QString);
@@ -40,9 +42,9 @@ private:
     QMap<QString,QString> sharedFiles;
     QMap<QString,QString> contentTypes;
 
-    void Sleep(int msec);
+    //void Sleep(int msec);
     void procIndexReq(QDataStream &os, QString request);
-    void procFileReq(QDataStream &os, QString request, QString fileName);
+    void procFileReq(QDataStream &os, QString request, QString fileName);  
 };
 
 #endif // HTTPDEAMON_H

@@ -1,4 +1,4 @@
-#ifndef HTTPUPGRADE_H
+﻿#ifndef HTTPUPGRADE_H
 #define HTTPUPGRADE_H
 
 #include "http/httpdaemon.h"

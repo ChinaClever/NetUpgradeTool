@@ -46,14 +46,15 @@ HttpDaemon::HttpDaemon(quint16 port, QObject* parent)
     contentTypes["bin"] = "application/octet-stream";
     //contentTypes["pdf"] = "application/pdf";
     listen(QHostAddress::Any, port);
+    mRet = false;
     QObject::connect(this,SIGNAL(newConnection()),this,SLOT(incomingConnection()));
     //    qDebug() << isListening();
 }
 
 void HttpDaemon::incomingConnection()
 {
-    //    qDebug() << "in connection";
-    if (disabled)
+    qDebug() << "in connection"<<disabled;
+   if (disabled)
         return;
 
     // When a new client connects, the server constructs a QTcpSocket and all
@@ -61,6 +62,7 @@ void HttpDaemon::incomingConnection()
     // works asynchronously, this means that all the communication is done
     // in the two slots readClient() and discardClient().
     QTcpSocket* s = nextPendingConnection();
+    mRet = false;
     connect(s, SIGNAL(readyRead()), this, SLOT(readClient()));
     connect(s, SIGNAL(disconnected()), this, SLOT(discardClient()));
 }
@@ -72,7 +74,8 @@ void HttpDaemon::procIndexReq(QDataStream &os, QString request)
     QString procIndexPage;
     procIndexPage = indexPage;
     header += "HTTP/1.0 200 Ok\r\n";
-    header += "Content-Type: text/html;\r\n";
+    //header += "Content-Type: text/html;\r\n";
+    header += "Content-Type: application/octet-stream;\r\n";
     header += "Content-Length: " + QString::number(procIndexPage.size()) + ";\r\n\r\n";
 
     QMap<QString,QString>::iterator i = sharedFiles.begin();
@@ -95,9 +98,9 @@ void HttpDaemon::Sleep(int msec)
 
 void HttpDaemon::procFileReq(QDataStream &os, QString request, QString fileName)
 {
-    if (sharedFiles.find(fileName) == sharedFiles.end())
+    if (sharedFiles.find(QFileInfo(fileName).fileName()) == sharedFiles.end())
         return;
-    QFile file(sharedFiles[fileName]);
+    QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly))
         return;
     Q_UNUSED(request)
@@ -123,11 +126,14 @@ void HttpDaemon::procFileReq(QDataStream &os, QString request, QString fileName)
         os.writeRawData(tmp.data(),tmp.size());
 
         sentLen += tmp.size();
-        float p = (((sentLen - fileSize)*1.0)/sentLen) * 100;
+        float p = ((sentLen*1.0)/fileSize) * 100;
+        //qDebug()<<"progress"<<p<<tmp.size()<<sentLen;
         emit progressSig(p, "OK");
         if (disabled) return;
         else Sleep(25);
     }
+    if(file.atEnd()) this->mRet = true;
+    else this->mRet = false;
     file.close();
 }
 
@@ -139,7 +145,7 @@ void HttpDaemon::readClient()
     // server looks if it was a get request and sends a very simple HTML
     // document back.
     QTcpSocket* socket = (QTcpSocket*)sender();
-    if (socket->canReadLine()) {
+    if (socket->canReadLine()&&!sharedFiles.empty()) {
         QStringList tokens = QString(socket->readLine()).split(QRegExp("[ \r\n][ \r\n]*"));
         if (tokens[0] == "GET") {
             QDataStream os(socket);
@@ -162,19 +168,20 @@ void HttpDaemon::readClient()
 #endif
             socket->close();
 
-            // qDebug() << "Wrote to client";
+            //qDebug() << "Wrote to client";
             if (socket->state() == QTcpSocket::UnconnectedState) {
-                delete socket;
-                //  qDebug() << "Connection closed";
+                //delete socket;
+                //qDebug() << "aaConnection closed";
             }
         }
     }
+
 }
 
 void HttpDaemon::discardClient()
 {
     QTcpSocket* socket = (QTcpSocket*)sender();
-    socket->deleteLater();
+    //socket->deleteLater();
 
     qDebug() << "Connection closed";
 }
