@@ -170,7 +170,7 @@ void HttpDaemon::readClient()
 
             //qDebug() << "Wrote to client";
             if (socket->state() == QTcpSocket::UnconnectedState) {
-                //delete socket;
+                delete socket;
                 //qDebug() << "aaConnection closed";
             }
         }
