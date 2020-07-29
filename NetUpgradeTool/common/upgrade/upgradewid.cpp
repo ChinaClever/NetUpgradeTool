@@ -12,7 +12,7 @@ UpgradeWid::UpgradeWid(QWidget *parent) :
     mExportDlg = new ExportDlg(this);
     mTcpThread = new TcpUpgrade(this);
     mTftpThread = new TftpUpgrade(this);
-    mHttpThread = new HttpUpgrade(this);
+    //mHttpThread = new HttpUpgrade(this);
 
     timer = new QTimer(this);
     timer->start(500);
@@ -34,14 +34,105 @@ UpgradeWid::~UpgradeWid()
     delete ui;
 }
 
+
+
+QByteArray UpgradeWid::readFile(const QString &fn)
+{
+    QFile file(fn);
+    QByteArray array;
+
+    bool ret = file.exists();
+    ret = file.open(QIODevice::ReadOnly);
+    if(ret) {
+        array = file.readAll();
+        file.close();
+    } else {
+        qDebug() << "open file err";
+    }
+
+    return array;
+}
+
+ushort UpgradeWid::calccrc (ushort crc, uchar crcbuf)
+{
+    uchar x, kkk=0;
+    crc = crc^crcbuf;
+    for(x=0;x<8;x++)
+    {
+        kkk = crc&1;
+        crc >>= 1;
+        crc &= 0x7FFF;
+        if(kkk == 1)
+            crc = crc^0xa001;
+        crc=crc&0xffff;
+    }
+    return crc;
+}
+
+/**
+  * 功　能：CRC校验
+  * 入口参数：buf -> 缓冲区  len -> 长度
+  * 返回值：CRC
+  */
+QByteArray UpgradeWid::rtu_crc(QByteArray &array)
+{
+    ushort crc = 0xffff;
+    for(int i=0; i<array.size(); i++)
+        crc = calccrc(crc, array.at(i));
+
+    QByteArray res;
+    res.append(crc >> 8);
+    res.append(crc & 0xFF);
+
+    return res;
+}
+
+QByteArray UpgradeWid::appendCrc(QByteArray &array)
+{
+    QByteArray crcs;
+    for(int i=0; i<array.size(); ) {
+        QByteArray temp;
+        for(int k=0; (k<1024) && (i<array.size()); k++) {
+             temp.append(array.at(i++));
+        }
+        crcs.append(rtu_crc(temp));
+    }
+
+    return rtu_crc(crcs);
+}
+
+
+bool UpgradeWid::checkFileCrc(const QString &fn)
+{
+    bool ret = false;
+    QByteArray crcs;
+    QByteArray array = readFile(fn);
+    int len = array.size();
+    if(len > 2) {
+        crcs.append(array.at(len-2));
+        crcs.append(array.at(len-1));
+        array.remove(len-2, 2);
+
+        QByteArray res = appendCrc(array);
+        if(res == crcs) ret = true;
+    }
+
+    return ret;
+}
+
+
 bool UpgradeWid::checkFile()
 {
     bool ret = false;
     QString fn = ui->lineEdit->text();
     if(!fn.isEmpty()) {
-        if(fn.contains("bin") || (1 == mData->devtype&&fn.contains("tar"))||(2 == mData->devtype&&fn.contains("rbl"))) {
-            mData->file = fn;
-            ret = true;
+        if(fn.contains("bin") || fn.contains("tar")) {
+            ret = checkFileCrc(fn);
+            if(ret) {
+                mData->file = fn;
+            } else {
+                CriticalMsgBox box(this, tr("升级文件内容验证错误! 请重新选择"));
+            }
         } else {
             CriticalMsgBox box(this, tr("升级文件格式错误! 请重新选择"));
             //CriticalMsgBox box(this, tr("upgrade file format error!, please re-select"));
@@ -92,15 +183,11 @@ void UpgradeWid::timeoutDone(void)
 
 void UpgradeWid::on_updateBtn_clicked()
 {
-    switch (mData->devtype) {
-    case 0: mUpgradeThread = mTftpThread; break;
-    case 1: mUpgradeThread = mTcpThread; break;
-    case 2: mUpgradeThread = mHttpThread; break;
-
-    default:
-       mUpgradeThread = mTftpThread; break;
+    if(mData->devtype) {
+        mUpgradeThread = mTcpThread;
+    } else {
+        mUpgradeThread = mTftpThread;
     }
-
 
     if(checkFile()) {
         mUpgradeThread->startSend();
@@ -119,7 +206,7 @@ void UpgradeWid::on_breakBtn_clicked()
         //QuMsgBox box(this, tr("Do you want to interrupt transmission?"));
         if(box.Exec()) {
             mUpgradeThread->breakDown();
-            if(!mData->devtype) {
+            if(0 == mData->devtype) {
                 InfoMsgBox msg(this, tr("软件即将重启!!!"));
                 //InfoMsgBox msg(this, tr("Software will reboot!!!"));
                 QProcess *process = new QProcess(this);
