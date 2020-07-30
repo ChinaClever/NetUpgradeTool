@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mDevSelectWid = new DevSelectWid(ui->devWid);
 
 
+    ui->languageWid->setHidden(true);
     connect(this,SIGNAL(languageChangeSig()),mIpsTabWid,SLOT(languageChanged()));
     connect(this,SIGNAL(languageChangeSig()),mOksTabWid,SLOT(languageChanged()));
     connect(this,SIGNAL(languageChangeSig()),mErrsTabWid,SLOT(languageChanged()));

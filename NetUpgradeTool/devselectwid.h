@@ -23,8 +23,7 @@ protected:
 private slots:
     void timeoutDone(void);
     void on_okBtn_clicked();
-
-    void on_ChooseTypeBox_currentTextChanged(const QString &text);
+    void on_ChooseTypeBox_currentIndexChanged(int index);
 
 public slots:
     void languageChanged();

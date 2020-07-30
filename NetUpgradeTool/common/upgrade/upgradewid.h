@@ -19,13 +19,17 @@ public:
 
 protected:
     bool checkFile();
+    QByteArray readFile(const QString &fn);
+    ushort calccrc (ushort crc, uchar crcbuf);
+    QByteArray rtu_crc(QByteArray &array);
+    QByteArray appendCrc(QByteArray &array);
+    bool checkFileCrc(const QString &fn);
 
 private slots:
     void timeoutDone();
     void on_openBtn_clicked();
     void on_updateBtn_clicked();
     void on_exportBtn_clicked();
-
     void on_breakBtn_clicked();
 
 public slots:

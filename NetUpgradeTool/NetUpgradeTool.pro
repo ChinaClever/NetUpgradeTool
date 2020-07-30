@@ -46,7 +46,6 @@ FORMS += \
         mainwindow.ui \
     devselectwid.ui
 
-
 RESOURCES += \
     images/images.qrc
 
