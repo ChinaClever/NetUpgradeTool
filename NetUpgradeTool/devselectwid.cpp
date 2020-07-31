@@ -12,7 +12,6 @@ DevSelectWid::DevSelectWid(QWidget *parent) :
     timer->start(200);
     connect(timer, SIGNAL(timeout()),this, SLOT(timeoutDone()));
     mCount = 1;
-
     //    ui->groupBox->setTitle("Type Of Equipment Selection Zone");
     //    ui->label->setText("username");
     //    ui->label_2->setText("password");
@@ -57,7 +56,6 @@ bool DevSelectWid::checkInput()
 
 void DevSelectWid::setenabled(bool e)
 {
-    ui->ChooseTypeBox->setEnabled(e);
     ui->userEdit->setEnabled(e);
     ui->pwdEdit->setEnabled(e);
 }

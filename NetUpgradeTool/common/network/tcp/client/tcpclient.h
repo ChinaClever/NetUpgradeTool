@@ -12,6 +12,7 @@ typedef enum {
     UP_CMD_ERR, // 连接错误
     UP_CMD_VERIFY,// 验证成功
     UP_CMD_PWDERR, // 账号密码错误
+    UP_CMD_CRCERR,// CRC验证失败
 }UP_TCP_CMD;
 #define TCP_PORT	30966 // TCP端口号
 

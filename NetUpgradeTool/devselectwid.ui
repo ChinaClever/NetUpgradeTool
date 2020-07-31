@@ -52,6 +52,9 @@
         <height>26</height>
        </rect>
       </property>
+      <property name="currentText">
+       <string>UPGRADE SAFELY</string>
+      </property>
       <property name="currentIndex">
        <number>2</number>
       </property>
@@ -67,7 +70,7 @@
       </item>
       <item>
        <property name="text">
-        <string>网络安全加密升级</string>
+        <string>UPGRADE SAFELY</string>
        </property>
       </item>
      </widget>

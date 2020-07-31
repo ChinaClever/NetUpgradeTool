@@ -65,6 +65,9 @@ void TcpUpgrade::connectSlot(int step)
          msg = tr(" 传输失败，请检查网络!!");
         //msg = tr(" transmission failure，please check network!!");
         break;
+    case UP_CMD_CRCERR:
+        msg = tr(" CRC校验失败!!");
+        break;
     }
 
     if(!msg.isEmpty()) {
