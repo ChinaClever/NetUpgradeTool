@@ -81,8 +81,8 @@ QByteArray UpgradeWid::rtu_crc(QByteArray &array)
         crc = calccrc(crc, array.at(i));
 
     QByteArray res;
-    res.append(crc >> 8);
     res.append(crc & 0xFF);
+    res.append(crc >> 8);
 
     return res;
 }
@@ -126,7 +126,7 @@ bool UpgradeWid::checkFile()
     bool ret = false;
     QString fn = ui->lineEdit->text();
     if(!fn.isEmpty()) {
-        if(fn.contains("bin") || fn.contains("tar")) {
+        if(fn.contains("bin") || fn.contains("tar")||fn.contains("clever") ) {
             ret = checkFileCrc(fn);
             if(ret) {
                 mData->file = fn;

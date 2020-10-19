@@ -206,7 +206,9 @@ void TcpClient::readMessageSlot(void)
         qDebug() << "readMessageSlot" << datagram.data();
     }
 
-    if(ret)
+    if(!mRecvData.contains("OK"))
+        emit connectSig(UP_CMD_CRCERR);
+    else if(ret)
         emit connectSig(UP_CMD_READ);
 }
 
