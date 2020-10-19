@@ -44,7 +44,7 @@ private:
     sTcpUpload mTcpUpdateStr;
     QByteArray mByFile;
     bool isRun, isStart, isVeried;
-    int mSentLen;
+    int mSentLen, mCount;
 };
 
 #endif // TCPUPGRADE_H

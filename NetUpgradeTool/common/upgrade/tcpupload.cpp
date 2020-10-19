@@ -121,7 +121,7 @@ bool TcpUpload::sentData(void)
 {
     bool ret = true;
     if(mByFile.size() > 0)
-    {
+    {        
         int len = mByFile.size();
         if(len > 1024) len = 1024;   // 一次只发送1024个数据
 
@@ -130,6 +130,7 @@ bool TcpUpload::sentData(void)
             data.append(mByFile.at(i));
         }
 
+        mCount++;  // 连续发送数据包数量
         mByFile.remove(0, len);
         ret = mTcpClient->sentMessage(data);
         if(ret) progress();
@@ -155,6 +156,7 @@ void TcpUpload::connectSlot(int step)
     switch (step) {
     case UP_CMD_CONNECT: // 连接成功 首先发送文件长度
         startSent();
+        mCount = 0;
         emit connectSig(UP_CMD_CONNECT); // 账号错误
         break;
 
