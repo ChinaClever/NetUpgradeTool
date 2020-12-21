@@ -18,27 +18,30 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     ui->languageWid->setHidden(true);
-    connect(this,SIGNAL(languageChangeSig()),mIpsTabWid,SLOT(languageChanged()));
-    connect(this,SIGNAL(languageChangeSig()),mOksTabWid,SLOT(languageChanged()));
-    connect(this,SIGNAL(languageChangeSig()),mErrsTabWid,SLOT(languageChanged()));
+//    connect(this,SIGNAL(languageChangeSig()),mIpsTabWid,SLOT(languageChanged()));
+//    connect(this,SIGNAL(languageChangeSig()),mOksTabWid,SLOT(languageChanged()));
+//    connect(this,SIGNAL(languageChangeSig()),mErrsTabWid,SLOT(languageChanged()));
     //    mUdpTesting = new UdpTesting(this);
 
     //    timer = new QTimer(this);
     //    timer->start(200);
     //    connect(timer, SIGNAL(timeout()),this, SLOT(timeoutDone()));
 
-//    this->setWindowTitle(tr("PDU UpgradeTool"));
-//    ui->ipWid->setTitle("IP Generation Zone");
-//    ui->group->setTitle("IP List Show Zone");
-//    ui->upWid->setTitle("Upgrade Operation Zone");
+#if LANGUAGE==1
+    this->setWindowTitle(tr("PDU UpgradeTool V1.2"));
+    ui->ipWid->setTitle("IP Generation Zone");
+    ui->group->setTitle("IP List Show Zone");
+    ui->upWid->setTitle("Upgrade Operation Zone");
+#endif
     qtrans = new QTranslator(this);
 
-    connect(ui->EnradioBtn,SIGNAL(toggled(bool)),this,SLOT(languageChanged()));
-    connect(ui->ChradioBtn,SIGNAL(toggled(bool)),this,SLOT(languageChanged()));
-    connect(this,SIGNAL(languageChangeSig()),mIpsWid,SLOT(languageChanged()));
-    connect(this,SIGNAL(languageChangeSig()),mUpgradeWid,SLOT(languageChanged()));
-    connect(this,SIGNAL(languageChangeSig()),mDevSelectWid,SLOT(languageChanged()));
-    ui->ChradioBtn->setChecked(true);
+
+//    connect(ui->EnradioBtn,SIGNAL(toggled(bool)),this,SLOT(languageChanged()));
+//    connect(ui->ChradioBtn,SIGNAL(toggled(bool)),this,SLOT(languageChanged()));
+//    connect(this,SIGNAL(languageChangeSig()),mIpsWid,SLOT(languageChanged()));
+//    connect(this,SIGNAL(languageChangeSig()),mUpgradeWid,SLOT(languageChanged()));
+//    connect(this,SIGNAL(languageChangeSig()),mDevSelectWid,SLOT(languageChanged()));
+//    ui->ChradioBtn->setChecked(true);
 }
 
 MainWindow::~MainWindow()

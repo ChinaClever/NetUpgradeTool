@@ -20,17 +20,18 @@ IpsWid::IpsWid(QWidget *parent) :
 {
     ui->setupUi(this);
     on_radio_2_clicked(true);
+#if LANGUAGE==1
+    ui->radio_1->setText("IP Import");
+    ui->exportBtn->setText("Import");
 
-    //    ui->radio_1->setText("IP Import");
-    //    ui->exportBtn->setText("Import");
+    ui->radio_2->setText("Single IP");
+    ui->btn_1->setText("Confirm");
 
-    //    ui->radio_2->setText("Single IP");
-    //    ui->btn_1->setText("confirm");
-
-    //    ui->radio_3->setText("IP scope selection");
-    //    ui->label->setText("starting IP");
-    //    ui->label_2->setText("ending IP");
-    //    ui->btn_2->setText("confirm");
+    ui->radio_3->setText("IP scope selection");
+    ui->label->setText("Starting IP");
+    ui->label_2->setText("Ending IP");
+    ui->btn_2->setText("Confirm");
+#endif
 }
 
 IpsWid::~IpsWid()
@@ -83,8 +84,12 @@ bool IpsWid::readFile(QString &fn, QStringList &list)
             if(ret) {
                 list  << str;
             } else {
+#if LANGUAGE==1
+
+                CriticalMsgBox bos(this, tr("%1th，%2 isn't IP address!!").arg(i).arg(str));
+#else
                 CriticalMsgBox bos(this, tr("第%1条，%2 不是IP地址!!").arg(i).arg(str));
-                //CriticalMsgBox bos(this, tr("%1th，%2 isn't IP address!!").arg(i).arg(str));
+#endif
                 return false;
             }
         }
@@ -95,8 +100,11 @@ bool IpsWid::readFile(QString &fn, QStringList &list)
 
 void IpsWid::on_exportBtn_clicked()
 {
+#if LANGUAGE==1
+    QString fn = QFileDialog::getOpenFileName(0,tr("IP txt File selection"),"/","",0);
+#else
     QString fn = QFileDialog::getOpenFileName(0,tr("文件选择"),"/","",0);
-    //QString fn = QFileDialog::getOpenFileName(0,tr("IP txt File selection"),"/","",0);
+#endif
     if (!fn.isNull()) {
         QStringList list;
         bool ret = readFile(fn, list);
@@ -114,8 +122,12 @@ void IpsWid::on_btn_1_clicked()
         QStringList list; list << ip;
         DataPacket::bulid()->data->ips = list;
     } else {
+
+#if LANGUAGE==1
+        CriticalMsgBox bos(this, tr("%1 isn't IP address!!").arg(ip));
+#else
         CriticalMsgBox bos(this, tr("%1 不是IP地址!!").arg(ip));
-        //CriticalMsgBox bos(this, tr("%1 isn't IP address!!").arg(ip));
+#endif
     }
 }
 
@@ -144,22 +156,35 @@ void IpsWid::on_btn_2_clicked()
     QString end = ui->endEdit->text();
 
     bool ret = cm_isIPaddress(start);
+#if LANGUAGE==1
+    if(ret) {
+        ret = cm_isIPaddress(end);
+        if(ret) {
+            int rtn = bulidIps(start, end);
+            if(!rtn) {
+                CriticalMsgBox bos(this, tr("It is an error for generating IP address!!"));
+            }
+        } else {
+            CriticalMsgBox bos(this, tr("%1 isn't IP address!!").arg(end));
+        }
+    } else {
+        CriticalMsgBox bos(this, tr("The start IP:%1 isn't IP address!!").arg(start));
+    }
+#else
     if(ret) {
         ret = cm_isIPaddress(end);
         if(ret) {
             int rtn = bulidIps(start, end);
             if(!rtn) {
                 CriticalMsgBox bos(this, tr("IP地址生成错误!!"));
-                //CriticalMsgBox bos(this, tr("It is an error for generating IP address!!"));
             }
         } else {
             CriticalMsgBox bos(this, tr("%1 不是IP地址!!").arg(end));
-            // CriticalMsgBox bos(this, tr("%1 isn't IP address!!").arg(end));
         }
     } else {
         CriticalMsgBox bos(this, tr("起始IP:%1 不是IP地址!!").arg(start));
-        //CriticalMsgBox bos(this, tr("The start IP:%1 isn't IP address!!").arg(start));
     }
+#endif
 }
 
 void IpsWid::languageChanged()

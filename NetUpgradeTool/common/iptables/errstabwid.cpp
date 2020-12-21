@@ -7,8 +7,12 @@ ErrsTabWid::ErrsTabWid(QWidget *parent) : IpsTabWid(parent)
 
 void ErrsTabWid::initWid()
 {
+
+#if LANGUAGE==1
+    QString title = tr("Fail list");
+#else
     QString title = tr("升级失败列表");
-    //QString title = tr("fail list");
+#endif
     QStringList header;
     header <<title;
     //header <<tr("fail list");
@@ -34,7 +38,7 @@ void ErrsTabWid::languageChanged()
     }
     else
     {
-        mheader<<"fail list";
+        mheader<<"Fail list";
     }
     qDebug()<<count<<mheader;
     count++;

@@ -25,6 +25,10 @@ protected:
     QByteArray appendCrc(QByteArray &array);
     bool checkFileCrc(const QString &fn);
 
+    void CRC32_Init();
+    void CRC32_Update(unsigned char *data, size_t len);
+    QByteArray CRC32_Final();
+
 private slots:
     void timeoutDone();
     void on_openBtn_clicked();
@@ -38,6 +42,8 @@ public slots:
 private:
     Ui::UpgradeWid *ui;
     sDataPacket *mData;
+
+    unsigned long mCrc;
 
     QTimer *timer;
     ExportDlg *mExportDlg;

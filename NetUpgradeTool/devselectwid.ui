@@ -42,7 +42,7 @@
      </property>
      <widget class="QComboBox" name="ChooseTypeBox">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="geometry">
        <rect>
@@ -53,7 +53,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <item>
        <property name="text">
@@ -62,12 +62,7 @@
       </item>
       <item>
        <property name="text">
-        <string>ZPDU/RPDU</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>网络安全加密升级</string>
+        <string>UPGRADE SAFELY</string>
        </property>
       </item>
      </widget>

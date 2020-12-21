@@ -5,6 +5,8 @@
 /**
  * 数据包
  */
+#define LANGUAGE 0 //1代表英文，0代表中文
+
 struct sDataPacket
 {
     bool isRun;
