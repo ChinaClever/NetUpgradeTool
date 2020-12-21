@@ -127,11 +127,16 @@ bool UpgradeWid::checkFile()
     QString fn = ui->lineEdit->text();
     if(!fn.isEmpty()) {
         if(fn.contains("bin") || fn.contains("tar")||fn.contains("clever") ) {
-            ret = checkFileCrc(fn);
+            if(mData->devtype) {
+                ret = checkFileCrc(fn);
+            }
+            else
+                ret = true;
             if(ret) {
                 mData->file = fn;
             } else {
                 CriticalMsgBox box(this, tr("升级文件内容验证错误! 请重新选择"));
+                //CriticalMsgBox box(this, tr("upgrade file content error!, please re-select"));
             }
         } else {
             CriticalMsgBox box(this, tr("升级文件格式错误! 请重新选择"));

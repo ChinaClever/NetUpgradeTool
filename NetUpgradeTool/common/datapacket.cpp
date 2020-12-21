@@ -4,7 +4,7 @@ DataPacket::DataPacket()
 {
     data = new sDataPacket;
     data->isRun = false;
-    data->devtype = 1;
+    data->devtype = 0;
     data->progress = 0;
     data->subPorgress = 0;
 }

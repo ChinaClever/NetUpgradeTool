@@ -35,7 +35,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>PDU批量升级工具</string>
+   <string>PDU批量升级工具V1.1</string>
   </property>
   <property name="windowIcon">
    <iconset>

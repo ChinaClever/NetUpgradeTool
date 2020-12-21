@@ -42,7 +42,7 @@
      </property>
      <widget class="QComboBox" name="ChooseTypeBox">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="geometry">
        <rect>
@@ -53,19 +53,14 @@
        </rect>
       </property>
       <property name="currentText">
-       <string>UPGRADE SAFELY</string>
+       <string>IP-PDU/MPDU</string>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <item>
        <property name="text">
         <string>IP-PDU/MPDU</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>ZPDU/RPDU</string>
        </property>
       </item>
       <item>
