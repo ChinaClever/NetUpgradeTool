@@ -28,6 +28,7 @@ protected:
     void CRC32_Init();
     void CRC32_Update(unsigned char *data, size_t len);
     QByteArray CRC32_Final();
+    QByteArray Md5(QByteArray ba , QString str);
 
 private slots:
     void timeoutDone();

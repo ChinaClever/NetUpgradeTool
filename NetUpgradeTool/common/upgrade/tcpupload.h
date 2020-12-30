@@ -31,6 +31,7 @@ protected:
     bool sentData(void);
     void stepMode(void);
     void progress(void);
+    QString Md5(QString str);
 
 signals:
     void connectSig(int);
@@ -43,6 +44,7 @@ private:
     TcpClient *mTcpClient;
     sTcpUpload mTcpUpdateStr;
     QByteArray mByFile;
+    QByteArray mEndFile;
     bool isRun, isStart, isVeried;
     int mSentLen;
 };

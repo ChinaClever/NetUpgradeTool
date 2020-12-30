@@ -60,6 +60,7 @@ void TcpClient::closeConnect(void)
 
 void TcpClient::newConnect(const QString &host, int port)
 {
+    qDebug()<<"mServerIP"<<mServerIP<<"host"<<host<<"isConnect"<<isConnect<<endl;
     if((mServerIP != host) || (!isConnect))
     {
         isNew = true;

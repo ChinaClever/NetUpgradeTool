@@ -102,10 +102,33 @@ QByteArray UpgradeWid::appendCrc(QByteArray &array)
         CRC32_Update((unsigned char*)temp.data(),k);
     }
 
+    QByteArray ret = CRC32_Final();
+    QString strFix = "@PLD?FDFQ5";
+    ret = Md5(ret , strFix);
     //return rtu_crc(crcs);
-    return CRC32_Final();
+    qDebug()<<"ret"<<ret<<endl;
+    return ret;
 }
 
+
+/**
+ * @brief Md5
+ * @param ba,str
+ * @return md5
+ */
+QByteArray UpgradeWid::Md5(QByteArray ba , QString str)
+{
+    QByteArray bb;
+    QCryptographicHash md(QCryptographicHash::Md5);
+    ba.append(str);
+    //qDebug()<<QString(ba).toLatin1().toHex()<<"size"<<ba.size()<<"16进制"<<ba.toHex().toUpper()<<endl;
+    md.addData(ba.toHex().toUpper());
+    bb = md.result();
+    QString ss;
+    ss.append(bb.toHex());
+    //qDebug()<<"ss"<<ss<<endl;
+    return bb.toHex();
+}
 
 bool UpgradeWid::checkFileCrc(const QString &fn)
 {
@@ -114,10 +137,10 @@ bool UpgradeWid::checkFileCrc(const QString &fn)
     QByteArray array = readFile(fn);
     int len = array.size();
     CRC32_Init();
-    if(len > 10) {
-        for( int i = 10 ; i > 0 ; i--)
+    if(len > 32) {
+        for( int i = 32 ; i > 0 ; i--)
             crcs.append(array.at(len-i));
-        array.remove(len-10, 10);
+        array.remove(len-32, 32);
 
         QByteArray res = appendCrc(array);
         if(res == crcs) ret = true;
@@ -333,16 +356,10 @@ QByteArray UpgradeWid::CRC32_Final()
     QByteArray ret;
     temp[0] = (mCrc & 0xFF000000UL) >> 24;
     ret.append(temp[0]);
-    ret.append(0x43);//"C"
-    ret.append(0x4C);//"L"
     temp[1] = (mCrc & 0x00FF0000UL) >> 16;
     ret.append(temp[1]);
-    ret.append(0x45);//"E"
-    ret.append(0x56);//"V"
     temp[2] = (mCrc & 0x0000FF00UL) >> 8;
     ret.append(temp[2]);
-    ret.append(0x45);//"E"
-    ret.append(0x52);//"R"
     temp[3] = (mCrc & 0x000000FFUL);
     ret.append(temp[3]);
 

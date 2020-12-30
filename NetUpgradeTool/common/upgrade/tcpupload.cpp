@@ -1,4 +1,6 @@
 #include "tcpupload.h"
+#include "common/aes/aesencrypt.h"
+#include <QCryptographicHash>
 
 TcpUpload::TcpUpload(QObject *parent) : QObject(parent)
 {
@@ -17,6 +19,11 @@ bool TcpUpload::readFile(const QString &fn)
     bool ret = file.open(QIODevice::ReadOnly);
     if(ret){
         mByFile = file.readAll();
+        int len = mByFile.size();
+        if(len > 32) {
+            for( int i = 32 ; i > 0 ; i--)
+                mEndFile.append(mByFile.at(len-i));
+        }
         file.close();
     }
     else
@@ -35,6 +42,7 @@ bool TcpUpload::sentLen(void)
     if(ret) {
         char buf[32] = {0};
         mSentLen =  mByFile.length();
+        mByFile.remove(mSentLen-32 ,32);
         sprintf(buf,"%d",mSentLen);
         ret = mTcpClient->sentMessage((uchar *)buf,strlen(buf)); // 发送文件长度
     }
@@ -50,13 +58,29 @@ bool TcpUpload::startSent(void)
 {
     bool ret = sentLen(); // 发送文件长度
     if(ret) {
-        ret =  mTcpClient->sentMessage(mTcpUpdateStr.usr.toLatin1());
-        ret =  mTcpClient->sentMessage(mTcpUpdateStr.pwd.toLatin1()); // 发送用户名信息
+        ret =  mTcpClient->sentMessage(Md5(mTcpUpdateStr.usr).toLatin1());
+        ret =  mTcpClient->sentMessage(Md5(mTcpUpdateStr.pwd).toLatin1()); // 发送用户名信息
     }
     return ret;
 }
 
-
+/**
+ * @brief Md5
+ * @param str
+ * @return md5
+ */
+QString TcpUpload::Md5(QString str)
+{
+    QString pwd=str;
+    QString md5;
+    QByteArray ba,bb;
+    QCryptographicHash md(QCryptographicHash::Md5);
+    ba.append(pwd);
+    md.addData(ba);
+    bb = md.result();
+    md5.append(bb.toHex());
+    return md5;
+}
 /**
  * @brief 接收验证信息
  * @return
@@ -76,6 +100,27 @@ bool TcpUpload::recvVerify(void)
             if(!isVeried) id = UP_CMD_PWDERR; // 账号错误
             else id = UP_CMD_ERR; // 账号错误
             emit connectSig(id); // 验证成功
+        }
+        if(str.size() > 3)
+        {
+            data.remove(data.length()-3,3);
+//            qDebug()<<__FUNCTION__<<"recv str"<<data.toHex()<<endl;
+            //QByteArray dd = QByteArray::fromHex(str.toLocal8Bit()).toBase64();
+            QByteArray dd =QByteArray::fromHex(QString(data.toHex()).toLocal8Bit()).toBase64();
+            std::string strEncrypt = AesEncrypt::AesEcbDecrypt(dd.toStdString(),
+                                                               QString("ZZHDCCTBNOZHNOCT").toStdString(),
+                                                               AesEncrypt::NoPadding);
+//            qDebug()<<__FUNCTION__<<strEncrypt.c_str();
+//            qDebug()<<__FUNCTION__<<"Aes"<<dd<<"to"<<QByteArray(strEncrypt.c_str()).toHex().toUpper();
+
+            QByteArray bb;
+            QCryptographicHash md(QCryptographicHash::Md5);
+            mEndFile.append(QByteArray(strEncrypt.c_str()).toHex().toUpper());
+            md.addData(mEndFile);
+            bb = md.result();
+            mByFile.append(bb.toHex());
+//            qDebug()<<__FUNCTION__<<"---qian---"<<mEndFile<<"---md5---"<<bb.toHex()<<endl;
+            mEndFile.clear();
         }
         isVeried = true;
     }

@@ -90,6 +90,7 @@ bool UpgradeThread::sentFile(void)
 #else
     if(exist) {
         mData->status = tr("开始传输：%1").arg(ip);
+        qDebug()<<"mData->status"<<mData->status<<endl;
         ret = upload(mData->file, ip);
         if(ret){
             mData->oks << ip;

@@ -8,6 +8,7 @@ include(tablecom/tablecom.pri)
 include(network/network.pri)
 include(upgrade/upgrade.pri)
 include(iptables/iptables.pri)
+include(aes/aes.pri)
 
 HEADERS += \
     $$PWD/datapacket.h \
