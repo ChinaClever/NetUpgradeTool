@@ -32,6 +32,7 @@ protected:
     void stepMode(void);
     void progress(void);
     QString Md5(QString str);
+    QString rand(void);
 
 signals:
     void connectSig(int);

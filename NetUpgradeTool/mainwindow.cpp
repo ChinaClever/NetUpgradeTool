@@ -18,9 +18,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     ui->languageWid->setHidden(true);
-//    connect(this,SIGNAL(languageChangeSig()),mIpsTabWid,SLOT(languageChanged()));
-//    connect(this,SIGNAL(languageChangeSig()),mOksTabWid,SLOT(languageChanged()));
-//    connect(this,SIGNAL(languageChangeSig()),mErrsTabWid,SLOT(languageChanged()));
+    //    connect(this,SIGNAL(languageChangeSig()),mIpsTabWid,SLOT(languageChanged()));
+    //    connect(this,SIGNAL(languageChangeSig()),mOksTabWid,SLOT(languageChanged()));
+    //    connect(this,SIGNAL(languageChangeSig()),mErrsTabWid,SLOT(languageChanged()));
     //    mUdpTesting = new UdpTesting(this);
 
     //    timer = new QTimer(this);
@@ -36,12 +36,13 @@ MainWindow::MainWindow(QWidget *parent) :
     qtrans = new QTranslator(this);
 
 
-//    connect(ui->EnradioBtn,SIGNAL(toggled(bool)),this,SLOT(languageChanged()));
-//    connect(ui->ChradioBtn,SIGNAL(toggled(bool)),this,SLOT(languageChanged()));
-//    connect(this,SIGNAL(languageChangeSig()),mIpsWid,SLOT(languageChanged()));
-//    connect(this,SIGNAL(languageChangeSig()),mUpgradeWid,SLOT(languageChanged()));
-//    connect(this,SIGNAL(languageChangeSig()),mDevSelectWid,SLOT(languageChanged()));
-//    ui->ChradioBtn->setChecked(true);
+    //    connect(ui->EnradioBtn,SIGNAL(toggled(bool)),this,SLOT(languageChanged()));
+    //    connect(ui->ChradioBtn,SIGNAL(toggled(bool)),this,SLOT(languageChanged()));
+    //    connect(this,SIGNAL(languageChangeSig()),mIpsWid,SLOT(languageChanged()));
+    //    connect(this,SIGNAL(languageChangeSig()),mUpgradeWid,SLOT(languageChanged()));
+    //    connect(this,SIGNAL(languageChangeSig()),mDevSelectWid,SLOT(languageChanged()));
+    //    ui->ChradioBtn->setChecked(true);
+
 }
 
 MainWindow::~MainWindow()

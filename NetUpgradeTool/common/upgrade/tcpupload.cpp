@@ -58,10 +58,33 @@ bool TcpUpload::startSent(void)
 {
     bool ret = sentLen(); // 发送文件长度
     if(ret) {
-        ret =  mTcpClient->sentMessage(Md5(mTcpUpdateStr.usr).toLatin1());
-        ret =  mTcpClient->sentMessage(Md5(mTcpUpdateStr.pwd).toLatin1()); // 发送用户名信息
+        ret =  mTcpClient->sentMessage(Md5(mTcpUpdateStr.usr).toLatin1()+rand().toLatin1());
+        ret =  mTcpClient->sentMessage(Md5(mTcpUpdateStr.pwd).toLatin1()+rand().toLatin1()); // 发送用户名信息
     }
     return ret;
+}
+
+/**
+ * @brief 开始发送
+ * @return retStr
+ */
+QString TcpUpload::rand(void)
+{
+    QString retStr;
+    QTime time = QTime::currentTime();
+    qsrand(time.msec()*qrand()*qrand()*qrand()*qrand()*qrand()*qrand());
+    int r = qrand();
+    r = r < 0 ? -r : r;//处理随机数为负数的情况
+    unsigned int n = r % 9999;//产生4位的随机数
+    if(n < 10)
+        retStr ="000"+ QString::number(n);
+    else if( n < 100)
+        retStr ="00"+ QString::number(n);
+    else if( n < 1000)
+        retStr ="0"+ QString::number(n);
+    else
+        retStr =QString::number(n);
+    return retStr;
 }
 
 /**
