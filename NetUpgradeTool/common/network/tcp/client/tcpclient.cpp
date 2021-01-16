@@ -107,7 +107,7 @@ bool TcpClient::sentMessage(uchar *buf,  int len)
  * @return true
  */
 bool TcpClient::sentMessage(const QByteArray &data)
-{   
+{
     QReadLocker locker(mLock); /*获取线程状态*/
     mSentData.append(data);
 
@@ -136,7 +136,6 @@ int TcpClient::writeMessage(char *buf, int len)
 int TcpClient::writeMessage(QByteArray &data)
 {
     int rtn = -1;
-
     if(isConnect)
     {
         QReadLocker locker(mLock); /*获取线程状态*/
