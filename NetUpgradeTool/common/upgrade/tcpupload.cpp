@@ -40,15 +40,63 @@ bool TcpUpload::sentLen(void)
 {
     bool ret =  readFile(mTcpUpdateStr.file);
     if(ret) {
-        char buf[32] = {0};
-        mSentLen =  mByFile.length();
-        mByFile.remove(mSentLen-32 ,32);
-        sprintf(buf,"%d",mSentLen);
-        ret = mTcpClient->sentMessage((uchar *)buf,strlen(buf)); // 发送文件长度
+        char buf[100] = {0};
+        int len = mByFile.length();
+        QByteArray str= checkFlagAndVer(mByFile, len);
+        if(str.size() == 0){
+            ret = false;
+        }else{
+            mSentLen =  mByFile.length();
+            sprintf(buf,"%d%s",mSentLen, str.data());
+            qDebug()<<"str.size()"<<str.size()<<endl;
+            ret = mTcpClient->sentMessage((uchar *)buf,strlen(buf)); // 发送文件长度
+        }
     }
     return ret;
 }
 
+/**
+ * @brief 检查包是否
+ * @return
+ */
+QByteArray TcpUpload::checkFlagAndVer(QByteArray &array , int& index)
+{
+    bool flag = false;
+    int len = array.size();
+    QByteArray byte;
+    QByteArray retArr ="";
+    int count = 0;
+    if(len > 50) {
+        int pre = len - 1;
+        for( int i = len-1 ; i > len-50 ; i--){
+            if( array.at(i) == '&' ){
+                count++;
+                if(pre == len-1)
+                    pre = i;
+                else{
+                    if(pre - i ==0)//避免&之间没有内容
+                        break;
+                    if(count == 2 && pre - i < 3)//避免后两个&之间内容长度必须大于3
+                        break;
+                    if(count == 3 && pre - i < 2)//避免前两个&之间内容固定长度为2
+                        break;
+                    pre = i;
+                }
+                if(count == 3){
+                    flag = true;
+                    index = i;
+                    break;
+                }
+            }
+        }
+
+        if(flag == false) return retArr;
+
+        retArr= array.right(len-index);
+        array.remove(index, len-index);
+    }
+    return retArr;
+}
 
 /**
  * @brief 开始发送
@@ -110,7 +158,7 @@ QString TcpUpload::Md5(QString str)
  */
 bool TcpUpload::recvVerify(void)
 {
-    bool ret = true;
+    bool ret = false;
     int id = UP_CMD_SENT_OK;
 
     QByteArray data;
@@ -118,33 +166,20 @@ bool TcpUpload::recvVerify(void)
     if(rtn > 0) {
         QString str;
         str.append(data);
-        if(!str.contains("OK")){ // 验证错误
+        if(str.contains("ERR")){ // 验证错误
             ret = isStart = isRun = false;
             if(!isVeried) id = UP_CMD_PWDERR; // 账号错误
             else id = UP_CMD_ERR; // 账号错误
             emit connectSig(id); // 验证成功
+            ret = false;
+        }else if(str.contains("OK")){
+            ret = true;
+        }else if(str.contains("FINISH") && isStart){
+            isStart = false;
+            mByFile.clear();
+            emit connectSig(UP_CMD_SENT_OK);
         }
-        if(str.size() > 3)
-        {
-            data.remove(data.length()-3,3);
-//            qDebug()<<__FUNCTION__<<"recv str"<<data.toHex()<<endl;
-            //QByteArray dd = QByteArray::fromHex(str.toLocal8Bit()).toBase64();
-            QByteArray dd =QByteArray::fromHex(QString(data.toHex()).toLocal8Bit()).toBase64();
-            std::string strEncrypt = AesEncrypt::AesEcbDecrypt(dd.toStdString(),
-                                                               QString("ZZHDCCTBNOZHNOCT").toStdString(),
-                                                               AesEncrypt::NoPadding);
-//            qDebug()<<__FUNCTION__<<strEncrypt.c_str();
-//            qDebug()<<__FUNCTION__<<"Aes"<<dd<<"to"<<QByteArray(strEncrypt.c_str()).toHex().toUpper();
 
-            QByteArray bb;
-            QCryptographicHash md(QCryptographicHash::Md5);
-            mEndFile.append(QByteArray(strEncrypt.c_str()).toHex().toUpper());
-            md.addData(mEndFile);
-            bb = md.result();
-            mByFile.append(bb.toHex());
-//            qDebug()<<__FUNCTION__<<"---qian---"<<mEndFile<<"---md5---"<<bb.toHex()<<endl;
-            mEndFile.clear();
-        }
         isVeried = true;
     }
 
@@ -188,7 +223,7 @@ void TcpUpload::progress(void)
 bool TcpUpload::sentData(void)
 {
     bool ret = true;
-    if(mByFile.size() > 0)
+    if(mByFile.size() > 0 )
     {
         int len = mByFile.size();
         if(len > 1024) len = 1024;   // 一次只发送1024个数据
@@ -201,11 +236,6 @@ bool TcpUpload::sentData(void)
         mByFile.remove(0, len);
         ret = mTcpClient->sentMessage(data);
         if(ret) progress();
-    } else  {
-        if(isStart) {
-            isStart = false; // 发送完成，标志为复位
-            emit connectSig(UP_CMD_SENT_OK); // 验证成功
-        }
     }
 
     return ret;

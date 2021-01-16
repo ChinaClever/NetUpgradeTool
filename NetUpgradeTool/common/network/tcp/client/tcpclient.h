@@ -56,6 +56,8 @@ private:
     bool isNew;
     QTimer *timer;
     QReadWriteLock *mLock;
+    int readCount;
+    int writeCount;
 };
 
 bool get_tcp_connect(void);

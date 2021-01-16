@@ -1,6 +1,8 @@
 ﻿#include "upgradewid.h"
 #include "ui_upgradewid.h"
 #include "msgbox.h"
+#include "myMd5.h"
+
 
 UpgradeWid::UpgradeWid(QWidget *parent) :
     QWidget(parent),
@@ -91,43 +93,61 @@ QByteArray UpgradeWid::rtu_crc(QByteArray &array)
 
 QByteArray UpgradeWid::appendCrc(QByteArray &array)
 {
-    QByteArray crcs;
+    //QByteArray crcs;
+    QByteArray md5Str;
     for(int i=0; i<array.size(); ) {
         QByteArray temp;
         int k=0;
         for( ;(k<1024) && (i<array.size()); k++) {
             temp.append(array.at(i++));
         }
+
+        char str[40];
+        MyMd5((unsigned char*)(temp+md5Str).data(),str , temp.size()+md5Str.size());
+        md5Str.clear();
+        for(size_t j = 0 ; j < 32 ; j++)
+            md5Str.append(str[j]);
+        //CRC32_Update((unsigned char*)temp.data(),k);
         //crcs.append(rtu_crc(temp));
-        CRC32_Update((unsigned char*)temp.data(),k);
     }
 
-    QByteArray ret = CRC32_Final();
-    QString strFix = "@PLD?FDFQ5";
-    ret = Md5(ret , strFix);
-    //return rtu_crc(crcs);
-    qDebug()<<"ret"<<ret<<endl;
-    return ret;
+    //QByteArray ret = CRC32_Final();
+    char FixedBuf[11]="@PLD?FDFQ5";
+    char strtemp[40];
+    char str1[100];
+    strncpy(str1,md5Str.data(),32);
+    strncpy(&str1[32],FixedBuf,10);
+    MyMd5((unsigned char*)str1,strtemp , 42);
+    md5Str.clear();
+    for(size_t j = 0 ; j < 32 ; j++)
+        md5Str.append(strtemp[j]);
+    qDebug()<<"Last md5Str" << md5Str<<endl;
+    return md5Str;
 }
 
 
 /**
- * @brief Md5
- * @param ba,str
- * @return md5
+ * @brief MyMd5
+ * @param InBuf,OutBuf
+ * @return void
  */
-QByteArray UpgradeWid::Md5(QByteArray ba , QString str)
+void UpgradeWid::MyMd5(unsigned char *InBuf,char *OutBuf , int len)
 {
-    QByteArray bb;
-    QCryptographicHash md(QCryptographicHash::Md5);
-    ba.append(str);
-    //qDebug()<<QString(ba).toLatin1().toHex()<<"size"<<ba.size()<<"16进制"<<ba.toHex().toUpper()<<endl;
-    md.addData(ba.toHex().toUpper());
-    bb = md.result();
-    QString ss;
-    ss.append(bb.toHex());
-    //qDebug()<<"ss"<<ss<<endl;
-    return bb.toHex();
+    char i;
+    unsigned char decrypt[16]={0x00};
+    MD5_CTX md5;
+    char ch[2]={0,0};
+
+    MD5Init(&md5);
+    MD5Update(&md5,InBuf,len);
+    MD5Final(&md5,decrypt);
+
+    for(i=0;i<16;i++)
+    {
+        sprintf(ch,"%02x",decrypt[i]);
+        OutBuf[2*i] = ch[0];
+        OutBuf[2*i+1] = ch[1];
+    }
 }
 
 bool UpgradeWid::checkFileCrc(const QString &fn)
@@ -136,19 +156,118 @@ bool UpgradeWid::checkFileCrc(const QString &fn)
     QByteArray crcs;
     QByteArray array = readFile(fn);
     int len = array.size();
-    CRC32_Init();
-    if(len > 32) {
-        for( int i = 32 ; i > 0 ; i--)
-            crcs.append(array.at(len-i));
-        array.remove(len-32, 32);
-
-        QByteArray res = appendCrc(array);
-        if(res == crcs) ret = true;
+    int newlen = len;
+    //CRC32_Init();
+    if(checkFlagAndVer(array, newlen)){
+        if(newlen > 512) {
+            for( int i = 512 ; i > 0 ; i--)
+                crcs.append(array.at(newlen-i));
+            array.remove(newlen - 512 ,512);
+            QByteArray res = crcs;
+            QByteArray md5 = appendCrc(array);
+            if(md5.size() == 32 && res.size() == 512 && checkStr(md5,32) && checkStr(res,512))
+                ret = rsaVerifier(md5,res);
+        }
     }
-
     return ret;
 }
 
+bool UpgradeWid::checkStr(QByteArray array , int len)
+{
+    bool ret = true;
+    for(int i = 0 ; i < len ; i++)
+    {
+        if((array.at(i)>='0' && array.at(i)<='9') || (array.at(i)>='a' && array.at(i)<='f'))
+            continue;
+        else{
+            ret = false;
+            break;
+        }
+    }
+    return ret;
+}
+
+bool UpgradeWid::checkFlagAndVer(QByteArray &array , int& index)
+{
+    bool ret = false;
+    bool flag = false;
+    int len = array.size();
+    QByteArray byte;
+    int count = 0;
+    if(len > 50) {
+        int pre = len-1;
+        for( int i = len-1 ; i > len-50 ; i--){
+            if( array.at(i) == '&' ){
+                count++;
+                if(pre == len-1)
+                    pre = i;
+                else{
+                    if( pre - i ==0)//避免&之间没有内容
+                        break;
+                    if(count == 2 && pre - i < 3)//避免后两个&之间内容长度必须大于3
+                        break;
+                    if(count == 3 && pre - i < 2)//避免前两个&之间内容固定长度为2
+                        break;
+                    pre = i;
+                }
+
+                if(count == 3){
+                    flag = true;
+                    index = i;
+                    break;
+                }
+            }
+        }
+        if(flag == false) return ret;
+
+        array.remove(index, len-index);
+        ret = true;
+    }
+    return ret;
+}
+
+bool UpgradeWid::rsaVerifier(QByteArray& md5 , QByteArray &res)
+{
+    using namespace CryptoPP;
+    bool ret = false;
+    QByteArray publicKeydecBase64 = QByteArray::fromBase64(
+    QString("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuUtwPUEpohcEwy3/saBV \
+            xr68u7Sibv6qmJYh+NfIlRcY/u3sAyXYmOOXyYSS3edkLas1yhHypyLFHKgtGXQO \
+            6pbf3hku8dWiVbfsj047KT0pQdZpZl5qv+QeIMQNmEHL3S1dskB+TQDjx3Ee4Lx4 \
+            SnpXAt+aqnaicwRTV/UOO1gsW5/5nZuYO7jxC5XFiN+cO0xrsrIOI4aDgTyCqvbC \
+            2l08GvVkbsWwWTCdMRMDWuA0BpL6cIPNtiVF7MZy9F4AOF/4v8ZOiBjB+/CKLeYy \
+            Cj/dRQszJ5WXiL8lpWhCMxYZac16nVapViVzh0f1nLZ8nkhrpzvoOovf6bZGkz3y \
+            qwIDAQAB").toLatin1());
+
+    ByteQueue Publicqueue;
+    Weak::RSASSA_PKCS1v15_MD5_Verifier verifier;
+    HexDecoder decoder(new Redirector(Publicqueue));
+    std::string dec = QString(publicKeydecBase64.toHex()).toStdString();
+    decoder.Put((const unsigned char*)dec.data(), dec.size());
+    decoder.MessageEnd();
+    verifier.AccessKey().Load(Publicqueue);
+
+    StringSource signatureFile( QString(res).toStdString(), true, new CryptoPP::HexDecoder);
+    if (signatureFile.MaxRetrievable() != verifier.SignatureLength())
+    { throw std::string( "Signature Size Problem" ); }
+
+    SecByteBlock signature1(verifier.SignatureLength());
+    signatureFile.Get(signature1, signature1.size());
+
+    // Verify
+    SignatureVerificationFilter *verifierFilter = new SignatureVerificationFilter(verifier);
+    verifierFilter->Put(signature1, verifier.SignatureLength());
+    StringSource s(QString(md5).toStdString(), true, verifierFilter);
+
+    // Result
+    if(true == verifierFilter->GetLastResult()) {
+        ret = true;
+        qDebug() << "Signature on message verified" << endl;
+    } else {
+        qDebug() << "Message verification failed" << endl;
+    }
+    return ret;
+}
 
 bool UpgradeWid::checkFile()
 {

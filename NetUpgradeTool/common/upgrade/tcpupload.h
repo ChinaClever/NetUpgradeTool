@@ -33,6 +33,7 @@ protected:
     void progress(void);
     QString Md5(QString str);
     QString rand(void);
+    QByteArray checkFlagAndVer(QByteArray &array , int& index);
 
 signals:
     void connectSig(int);

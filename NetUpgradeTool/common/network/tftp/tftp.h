@@ -28,7 +28,7 @@
 #define OPCODE_ACK (4)
 #define OPCODE_ERR (5)
 
-#define BLOCKSIZE (512)
+#define TFTPBLOCKSIZE (512)
 #define DATA_PACKET_HEADER_LEN (4)
 #define RECV_BUFFER_SIZE 1024
 

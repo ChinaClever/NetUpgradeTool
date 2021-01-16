@@ -12,6 +12,7 @@ DevSelectWid::DevSelectWid(QWidget *parent) :
     timer->start(200);
     connect(timer, SIGNAL(timeout()),this, SLOT(timeoutDone()));
     mCount = 1;
+    ui->ChooseTypeBox->setCurrentIndex(mData->devtype);
 #if LANGUAGE==1
     ui->groupBox->setTitle("Type Of Equipment Selection Zone");
     ui->label->setText("Username");
