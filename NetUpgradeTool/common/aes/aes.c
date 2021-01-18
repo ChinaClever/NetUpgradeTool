@@ -930,7 +930,7 @@ int aes_encrypt_ccm(const BYTE payload[], WORD payload_len, const BYTE assoc[], 
 {
 	BYTE temp_iv[AES_BLOCK_SIZE], counter[AES_BLOCK_SIZE], mac[16], *buf;
 	int end_of_buf, payload_len_store_size;
-    WORD key[60];
+	WORD key[60];
 
 	if (mac_len != 4 && mac_len != 6 && mac_len != 8 && mac_len != 10 &&
 	   mac_len != 12 && mac_len != 14 && mac_len != 16)
@@ -993,7 +993,7 @@ int aes_decrypt_ccm(const BYTE ciphertext[], WORD ciphertext_len, const BYTE ass
 {
 	BYTE temp_iv[AES_BLOCK_SIZE], counter[AES_BLOCK_SIZE], mac[16], mac_buf[16], *buf;
 	int end_of_buf, plaintext_len_store_size;
-    WORD key[60];
+	WORD key[60];
 
 	if (ciphertext_len <= mac_len)
 		return(FALSE);

@@ -4,7 +4,7 @@
 #include "exports/exportdlg.h"
 #include "tcpupgrade.h"
 #include "httpupgrade.h"
-#include "cryptopp/cryptopputil.h"
+
 namespace Ui {
 class UpgradeWid;
 }
@@ -28,10 +28,7 @@ protected:
     void CRC32_Init();
     void CRC32_Update(unsigned char *data, size_t len);
     QByteArray CRC32_Final();
-    void MyMd5(unsigned char *InBuf,char *OutBuf , int len);
-    bool checkFlagAndVer(QByteArray &array, int &index);
-    bool rsaVerifier(QByteArray &md5, QByteArray &res);
-    bool checkStr(QByteArray array , int len);
+    QByteArray Md5(QByteArray ba , QString str);
 
 private slots:
     void timeoutDone();
