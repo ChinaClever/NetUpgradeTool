@@ -113,7 +113,7 @@ bool TcpUpload::startSent(void)
 }
 
 /**
- * @brief 随机数
+ * @brief 开始发送
  * @return retStr
  */
 QString TcpUpload::rand(void)
