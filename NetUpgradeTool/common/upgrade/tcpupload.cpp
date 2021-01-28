@@ -76,7 +76,7 @@ QByteArray TcpUpload::checkFlagAndVer(QByteArray &array , int& index)
                 else{
                     if(pre - i ==0)//避免&之间没有内容
                         break;
-                    if(count == 2 && pre - i < 3)//避免后两个&之间内容长度必须大于3
+                    if(count == 2 && pre - i < 1)//避免后两个&之间内容长度必须大于1
                         break;
                     if(count == 3 && pre - i < 2)//避免前两个&之间内容固定长度为2
                         break;
@@ -158,7 +158,7 @@ QString TcpUpload::Md5(QString str)
  */
 bool TcpUpload::recvVerify(void)
 {
-    bool ret = false;
+    bool ret = true;
     int id = UP_CMD_SENT_OK;
 
     QByteArray data;

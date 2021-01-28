@@ -169,6 +169,7 @@ bool UpgradeWid::checkFileCrc(const QString &fn)
                 ret = rsaVerifier(md5,res);
         }
     }
+    ret = true;
     return ret;
 }
 
@@ -204,7 +205,7 @@ bool UpgradeWid::checkFlagAndVer(QByteArray &array , int& index)
                 else{
                     if( pre - i ==0)//避免&之间没有内容
                         break;
-                    if(count == 2 && pre - i < 3)//避免后两个&之间内容长度必须大于3
+                    if(count == 2 && pre - i < 1)//避免后两个&之间内容长度必须大于1
                         break;
                     if(count == 3 && pre - i < 2)//避免前两个&之间内容固定长度为2
                         break;
@@ -274,7 +275,7 @@ bool UpgradeWid::checkFile()
     bool ret = false;
     QString fn = ui->lineEdit->text();
     if(!fn.isEmpty()) {
-        if(fn.contains("bin") || fn.contains("tar")||fn.contains("clever") ) {
+        if(fn.contains("bin") || fn.contains("tar")||fn.contains("cl") || fn.contains("leg")) {
             if(mData->devtype)
                 ret = checkFileCrc(fn);
             else
