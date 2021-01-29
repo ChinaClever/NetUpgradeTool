@@ -106,8 +106,10 @@ bool TcpUpload::startSent(void)
 {
     bool ret = sentLen(); // 发送文件长度
     if(ret) {
-        ret =  mTcpClient->sentMessage(Md5(mTcpUpdateStr.usr).toLatin1()+rand().toLatin1());
-        ret =  mTcpClient->sentMessage(Md5(mTcpUpdateStr.pwd).toLatin1()+rand().toLatin1()); // 发送用户名信息
+        if(mTcpClient != NULL)
+            ret =  mTcpClient->sentMessage(Md5(mTcpUpdateStr.usr).toLatin1()+rand().toLatin1());
+        if(mTcpClient != NULL)
+            ret =  mTcpClient->sentMessage(Md5(mTcpUpdateStr.pwd).toLatin1()+rand().toLatin1()); // 发送用户名信息
     }
     return ret;
 }

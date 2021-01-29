@@ -102,11 +102,17 @@ QByteArray UpgradeWid::appendCrc(QByteArray &array)
             temp.append(array.at(i++));
         }
 
-        char str[40];
-        MyMd5((unsigned char*)(temp+md5Str).data(),str , temp.size()+md5Str.size());
-        md5Str.clear();
-        for(size_t j = 0 ; j < 32 ; j++)
-            md5Str.append(str[j]);
+//        char str[40];
+//        MyMd5((unsigned char*)(temp+md5Str).data(),str , temp.size()+md5Str.size());
+//        md5Str.clear();
+//        for(size_t j = 0 ; j < 32 ; j++)
+//            md5Str.append(str[j]);
+        QByteArray test;
+        test.append(temp+md5Str);
+        QCryptographicHash hash(QCryptographicHash::Sha256);
+        hash.addData(test); //将btArray作为参数加密
+        md5Str=hash.result();
+        qDebug()<<md5Str.size()<<" sha256 "<<md5Str<<"   string "<<md5Str.toHex()<<endl;
         //CRC32_Update((unsigned char*)temp.data(),k);
         //crcs.append(rtu_crc(temp));
     }
@@ -116,13 +122,21 @@ QByteArray UpgradeWid::appendCrc(QByteArray &array)
     char strtemp[40];
     char str1[100];
     strncpy(str1,md5Str.data(),32);
-    strncpy(&str1[32],FixedBuf,10);
-    MyMd5((unsigned char*)str1,strtemp , 42);
-    md5Str.clear();
-    for(size_t j = 0 ; j < 32 ; j++)
-        md5Str.append(strtemp[j]);
+    strncpy(&str1[32],FixedBuf,11);
+//    MyMd5((unsigned char*)str1,strtemp , 42);
+//    md5Str.clear();
+//    for(size_t j = 0 ; j < 32 ; j++)
+//        md5Str.append(strtemp[j]);
+    QByteArray testlast;
+    testlast.append(str1);
+    qDebug()<<testlast.size()<<" testlast "<<testlast<<"  testlast string "<<testlast.toHex()<<endl;
+    QCryptographicHash hashlast(QCryptographicHash::Sha256);
+    hashlast.addData(testlast); //将btArray作为参数加密
+    md5Str=hashlast.result();
+
+    qDebug()<<md5Str.size()<<" last sha256 "<<md5Str<<"   string "<<md5Str.toHex()<<endl;
     qDebug()<<"Last md5Str" << md5Str<<endl;
-    return md5Str;
+    return md5Str.toHex();
 }
 
 
@@ -165,11 +179,12 @@ bool UpgradeWid::checkFileCrc(const QString &fn)
             array.remove(newlen - 512 ,512);
             QByteArray res = crcs;
             QByteArray md5 = appendCrc(array);
-            if(md5.size() == 32 && res.size() == 512 && checkStr(md5,32) && checkStr(res,512))
+//            if(md5.size() == 32 && res.size() == 512 && checkStr(md5,32) && checkStr(res,512))
+            if(md5.size() == 64 && res.size() == 512 &&  checkStr(res,512))
                 ret = rsaVerifier(md5,res);
         }
     }
-    ret = true;
+    //ret = true;
     return ret;
 }
 

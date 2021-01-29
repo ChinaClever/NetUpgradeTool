@@ -43,7 +43,7 @@ void outputMessage(QtMsgType type, const QMessageLogContext &context, const QStr
 
 int main(int argc, char *argv[])
 {
-    qInstallMessageHandler(outputMessage);//注释显示打印信息，打开则输出日志
+    //qInstallMessageHandler(outputMessage);//注释显示打印信息，打开则输出日志
     QApplication a(argc, argv);
 
     MainWindow w;
