@@ -169,7 +169,6 @@ bool UpgradeWid::checkFileCrc(const QString &fn)
                 ret = rsaVerifier(md5,res);
         }
     }
-    ret = true;
     return ret;
 }
 
