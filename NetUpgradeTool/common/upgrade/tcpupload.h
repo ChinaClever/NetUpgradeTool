@@ -31,7 +31,7 @@ protected:
     bool sentData(void);
     void stepMode(void);
     void progress(void);
-    QString Md5(QString str);
+    QString Sha256(QString str);
     QString rand(void);
     QByteArray checkFlagAndVer(QByteArray &array , int& index);
 

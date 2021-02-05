@@ -107,9 +107,9 @@ bool TcpUpload::startSent(void)
     bool ret = sentLen(); // 发送文件长度
     if(ret) {
         if(mTcpClient != NULL)
-            ret =  mTcpClient->sentMessage(Md5(mTcpUpdateStr.usr).toLatin1()+rand().toLatin1());
+            ret =  mTcpClient->sentMessage(Sha256(mTcpUpdateStr.usr).toLatin1()+rand().toLatin1());
         if(mTcpClient != NULL)
-            ret =  mTcpClient->sentMessage(Md5(mTcpUpdateStr.pwd).toLatin1()+rand().toLatin1()); // 发送用户名信息
+            ret =  mTcpClient->sentMessage(Sha256(mTcpUpdateStr.pwd).toLatin1()+rand().toLatin1()); // 发送用户名信息
     }
     return ret;
 }
@@ -142,17 +142,18 @@ QString TcpUpload::rand(void)
  * @param str
  * @return md5
  */
-QString TcpUpload::Md5(QString str)
+QString TcpUpload::Sha256(QString str)
 {
     QString pwd=str;
-    QString md5;
+    QString sha256;
     QByteArray ba,bb;
-    QCryptographicHash md(QCryptographicHash::Md5);
+    QCryptographicHash md(QCryptographicHash::Sha256);
     ba.append(pwd);
     md.addData(ba);
     bb = md.result();
-    md5.append(bb.toHex());
-    return md5;
+    sha256.append(bb.toHex());
+    qDebug()<<sha256<<endl;
+    return sha256;
 }
 /**
  * @brief 接收验证信息
