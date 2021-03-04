@@ -5,7 +5,7 @@
 /**
  * 数据包
  */
-#define LANGUAGE 0 //1代表英文，0代表中文
+#define LANGUAGE 1 //1代表英文，0代表中文
 
 struct sDataPacket
 {
