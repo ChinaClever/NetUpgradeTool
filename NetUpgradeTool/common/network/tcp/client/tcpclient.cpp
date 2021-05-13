@@ -143,7 +143,7 @@ int TcpClient::writeMessage(QByteArray &data)
         {
             rtn = mTcpSocket->write(data);
             if(rtn != data.size()) {
-                 emit connectSig(UP_CMD_ERR);
+                emit connectSig(UP_CMD_ERR);
             }
             mTcpSocket->flush();
             mTcpSocket->waitForBytesWritten();
@@ -209,6 +209,8 @@ void TcpClient::readMessageSlot(void)
     str.append(mRecvData);
     if(str.contains("OK") && readCount<3)
         readCount++;
+    else if(str.contains("ERR") && readCount<3)
+        emit connectSig(UP_CMD_PWDERR);
     if(ret && readCount >= 3)
         emit connectSig(UP_CMD_READ);
 }

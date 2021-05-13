@@ -171,7 +171,7 @@ bool TcpUpload::recvVerify(void)
         str.append(data);
         if(str.contains("ERR")){ // 验证错误
             ret = isStart = isRun = false;
-            if(!isVeried) id = UP_CMD_PWDERR; // 账号错误
+            if(!isVeried) id = UP_CMD_PWDERR;// 账号错误
             else id = UP_CMD_ERR; // 账号错误
             emit connectSig(id); // 验证成功
             ret = false;
@@ -256,9 +256,15 @@ void TcpUpload::connectSlot(int step)
     switch (step) {
     case UP_CMD_CONNECT: // 连接成功 首先发送文件长度
         startSent();
-        emit connectSig(UP_CMD_CONNECT); // 账号错误
+        emit connectSig(UP_CMD_CONNECT);
         break;
-
+    case UP_CMD_PWDERR:
+    {
+        isStart = isRun = false;
+        mTcpClient->closeConnect();
+        emit connectSig(UP_CMD_PWDERR); // 账号错误
+        break;
+    }
     case UP_CMD_READ: // 读取验证信息，
         if(recvVerify()) sentData();
         break;

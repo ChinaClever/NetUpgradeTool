@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //    connect(timer, SIGNAL(timeout()),this, SLOT(timeoutDone()));
 
 #if LANGUAGE==1
-    this->setWindowTitle(tr("PDU UpgradeTool V1.6--Signature"));
+    this->setWindowTitle(tr("PDU UpgradeTool V1.7--Signature"));
     ui->ipWid->setTitle("IP Generation Zone");
     ui->group->setTitle("IP List Show Zone");
     ui->upWid->setTitle("Upgrade Operation Zone");
