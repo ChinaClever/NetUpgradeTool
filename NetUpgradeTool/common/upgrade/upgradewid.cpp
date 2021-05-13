@@ -121,17 +121,21 @@ QByteArray UpgradeWid::appendCrc(QByteArray &array)
     char FixedBuf[11]="@PLD?FDFQ5";
     char strtemp[40];
     char str1[100];
-    strncpy(str1,md5Str.data(),32);
+//    strncpy(str1,md5Str.data(),32);
+    for(int i = 0 ; i < 32 ; i++)
+    {
+        str1[i] = md5Str.data()[i];
+    }
     strncpy(&str1[32],FixedBuf,11);
 //    MyMd5((unsigned char*)str1,strtemp , 42);
 //    md5Str.clear();
 //    for(size_t j = 0 ; j < 32 ; j++)
 //        md5Str.append(strtemp[j]);
-    QByteArray testlast;
-    testlast.append(str1);
-    qDebug()<<testlast.size()<<" testlast "<<testlast<<"  testlast string "<<testlast.toHex()<<endl;
+//    QByteArray testlast;
+//    testlast.append(str1);
+//    qDebug()<<testlast.size()<<" testlast "<<testlast<<"  testlast string "<<testlast.toHex()<<endl;
     QCryptographicHash hashlast(QCryptographicHash::Sha256);
-    hashlast.addData(testlast); //将btArray作为参数加密
+    hashlast.addData(str1 , 42); //将btArray作为参数加密
     md5Str=hashlast.result();
 
     qDebug()<<md5Str.size()<<" last sha256 "<<md5Str<<"   string "<<md5Str.toHex()<<endl;
