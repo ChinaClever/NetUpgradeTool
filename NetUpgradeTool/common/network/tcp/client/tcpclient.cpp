@@ -219,6 +219,8 @@ void TcpClient::readMessageSlot(void)
     }
     else if(str.contains("ERR") && readCount<3)
         emit connectSig(UP_CMD_PWDERR);
+    if(ret && readCount >= 3)
+        emit connectSig(UP_CMD_READ);
 }
 
 /**
