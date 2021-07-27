@@ -9,6 +9,7 @@
 #include "tcpclient.h"
 
 static bool isConnect = false;
+extern int chipVer;
 
 /**
  * @brief 获取TCP连接状态
@@ -205,11 +206,19 @@ void TcpClient::readMessageSlot(void)
 
         qDebug() << "readMessageSlot" << datagram.data();
     }
+    QString str;
+    str.append(mRecvData);
 
-    if(!mRecvData.contains("OK"))
-        emit connectSig(UP_CMD_CRCERR);
-    else if(ret)
-        emit connectSig(UP_CMD_READ);
+    if(str=="OK" && readCount<3){
+        if( chipVer == 0 )readCount++;
+        else emit connectSig(UP_CMD_CHIPERR);
+    }
+    else if(str=="OKHC" && readCount<3){
+        if( chipVer == 1 )readCount++;
+        else emit connectSig(UP_CMD_CHIPERR);
+    }
+    else if(str.contains("ERR") && readCount<3)
+        emit connectSig(UP_CMD_PWDERR);
 }
 
 /**

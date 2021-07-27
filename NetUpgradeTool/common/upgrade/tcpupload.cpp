@@ -1,5 +1,7 @@
 #include "tcpupload.h"
 
+int chipVer = 0;
+
 TcpUpload::TcpUpload(QObject *parent) : QObject(parent)
 {
     mTcpClient = new TcpClient(this);
@@ -41,6 +43,57 @@ bool TcpUpload::sentLen(void)
     return ret;
 }
 
+/**
+ * @brief 检查包是否
+ * @return
+ */
+QByteArray TcpUpload::checkFlagAndVer(QByteArray &array , int& index)
+{
+    bool flag = false;
+    int len = array.size();
+    QByteArray byte;
+    QByteArray retArr ="";
+    int count = 0;
+    bool ok;
+    if( array.at(len - 1) != '&' )
+    {
+        chipVer = array.right(1).toInt(&ok,16);
+        array.remove(len - 1, 1);
+        len = len - 1;
+    }else{
+        chipVer = 0;
+    }
+    if(len > 50) {
+        int pre = len - 1;
+        for( int i = len-1 ; i > len-50 ; i--){
+            if( array.at(i) == '&' ){
+                count++;
+                if(pre == len-1)
+                    pre = i;
+                else{
+                    if(pre - i ==0)//避免&之间没有内容
+                        break;
+                    if(count == 2 && pre - i < 1)//避免后两个&之间内容长度必须大于1
+                        break;
+                    if(count == 3 && pre - i < 2)//避免前两个&之间内容固定长度为2
+                        break;
+                    pre = i;
+                }
+                if(count == 3){
+                    flag = true;
+                    index = i;
+                    break;
+                }
+            }
+        }
+
+        if(flag == false) return retArr;
+
+        retArr= array.right(len-index);
+        array.remove(index, len-index);
+    }
+    return retArr;
+}
 
 /**
  * @brief 开始发送

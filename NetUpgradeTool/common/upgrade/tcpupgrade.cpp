@@ -68,6 +68,13 @@ void TcpUpgrade::connectSlot(int step)
     case UP_CMD_CRCERR:
         msg = tr(" CRC校验失败!!");
         break;
+    case UP_CMD_CHIPERR:
+#if LANGUAGE==1
+        msg = tr(" The type of chip failure，please change upgrade file!!");
+#else
+        msg = tr(" 芯片错误，请换升级包!!");
+#endif
+        break;
     }
 
     if(!msg.isEmpty()) {
