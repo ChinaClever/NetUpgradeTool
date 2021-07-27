@@ -45,6 +45,7 @@ void ComTableWid::initTableWidget(QStringList &header)
 
     ui->tableWidget->setColumnCount(header.size());    //设置列数
     ui->tableWidget->setHorizontalHeaderLabels(header);
+    ui->tableWidget->horizontalHeader()->setMinimumWidth(100);
 
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tableWidget->horizontalHeader()->setStretchLastSection(true);

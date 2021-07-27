@@ -8,8 +8,11 @@ IpsTabWid::IpsTabWid(QWidget *parent) : ComTableWid(parent)
 
 void IpsTabWid::initWid()
 {
+#if LANGUAGE==1
+    QString title = tr("Upgrade list");
+#else
     QString title = tr("需升级IP列表");
-    //QString title = tr("list of need to upgrade");
+#endif
     QStringList header;
     header <<title;
     //header <<tr("list of need to upgrade");
@@ -50,7 +53,7 @@ void IpsTabWid::languageChanged()
     }
     else
     {
-        mheader<<"list of need to upgrade";
+        mheader<<"Upgrade list";
     }
     count++;
     changeHeader(mheader);

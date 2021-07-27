@@ -8,8 +8,8 @@ UpgradeThread::UpgradeThread(QObject *parent) : QThread(parent)
 
 UpgradeThread::~UpgradeThread()
 {
-//    breakDown();
-//    wait();
+    //    breakDown();
+    //    wait();
 }
 
 /**
@@ -38,15 +38,25 @@ void UpgradeThread::saveLogs(const QString &ip, bool f, bool exist)
     str << QString::number(mData->progress);
     str << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
     str << ip;
+#if LANGUAGE==1
     if(exist){
-        if(f) str << tr("成功");
-            //str << tr("successful");
-        else str << tr("失败");
-            //str << tr("failure");
+        if(f)
+            str << tr("Successful");
+        else
+            str << tr("Failure");
+    } else {
+        str << tr("IP isn't existence");
+    }
+#else
+    if(exist){
+        if(f)
+            str << tr("成功");
+        else
+            str << tr("失败");
     } else {
         str << tr("IP不存在");
-        //str << tr("IP isn't existence");
     }
+#endif
 
     mData->logs << str;
 }
@@ -62,25 +72,38 @@ bool UpgradeThread::sentFile(void)
 
     bool exist = checkIp(ip);
     bool ret = false;
+#if LANGUAGE==1
     if(exist) {
-        //mData->status = tr("starting transmission：%1").arg(ip);
+        mData->status = tr("Starting transmission：%1").arg(ip);
+        ret = upload(mData->file, ip);
+        if(ret){
+            mData->oks << ip;
+            mData->status = tr("Transmission successful:%1").arg(ip);
+        } else {
+            mData->errs << ip;
+            mData->status = tr("Transmission failure：%1").arg(ip);
+        }
+    }  else {
+        mData->errs << ip;
+        mData->status = tr("Destination IP isn't existence：%1").arg(ip);
+    }
+#else
+    if(exist) {
         mData->status = tr("开始传输：%1").arg(ip);
+        qDebug()<<"mData->status"<<mData->status<<endl;
         ret = upload(mData->file, ip);
         if(ret){
             mData->oks << ip;
             mData->status = tr("传输成功：%1").arg(ip);
-            //mData->status = tr("transmission successful:%1").arg(ip);
         } else {
             mData->errs << ip;
             mData->status = tr("传输失败：%1").arg(ip);
-            //mData->status = tr("transmission failure：%1").arg(ip);
         }
     }  else {
         mData->errs << ip;
         mData->status = tr("目标IP不存在：%1").arg(ip);
-         //mData->status = tr("destination IP isn't existence：%1").arg(ip);
     }
-
+#endif
     mData->progress++;
     saveLogs(ip, ret , exist);
 
@@ -104,13 +127,19 @@ void UpgradeThread::overSend()
     mData->isRun = false;
 
     QString str;
+#if LANGUAGE==1
+    if(mData->errs.size()) {
+        str = tr("%1 failure %2 successful").arg(mData->errs.size()).arg(mData->oks.size());
+    } else {
+        str = tr("%1 successful ").arg(mData->oks.size());
+    }
+#else
     if(mData->errs.size()) {
         str = tr("%1台失败 %2台成功 ").arg(mData->errs.size()).arg(mData->oks.size());
-        //str = tr("%1 failure %2 successful").arg(mData->errs.size()).arg(mData->oks.size());
     } else {
         str = tr("%1台成功 ").arg(mData->oks.size());
-        //str = tr("%1 successful ").arg(mData->oks.size());
     }
+#endif
     mData->status = str;
 }
 
@@ -135,7 +164,8 @@ void UpgradeThread::breakDown()
 bool UpgradeThread::checkIp(const QString& ip)
 {
     QProcess pingProcess;
-    QString strArg = "ping " + ip + " -n 1 -i 2";  //strPingIP 为设备IP地址
+    //QString strArg = "ping " + ip + " -n 2 -i 2";  //strPingIP 为设备IP地址
+    QString strArg = "ping " + ip ;  //strPingIP 为设备IP地址
     pingProcess.start(strArg,QIODevice::ReadOnly);
     pingProcess.waitForFinished(-1);
 

@@ -159,11 +159,11 @@ void Tftp::sendDataAckMsg(struct TFTPData *pData, QHostAddress sender, quint16 s
 
 void Tftp::sendDataMsg(short blockno, QHostAddress sender, quint16 senderPort)
 {
-    static char temp_buff[4*BLOCKSIZE] = {0};
-    static char data_packet_buff[4*BLOCKSIZE] = {0};
+    static char temp_buff[4*TFTPBLOCKSIZE] = {0};
+    static char data_packet_buff[4*TFTPBLOCKSIZE] = {0};
 
     int data_packet_size = 0;
-    int data_size = sFile->read(temp_buff, BLOCKSIZE);
+    int data_size = sFile->read(temp_buff, TFTPBLOCKSIZE);
     if(data_size < 0) { isRun=false; return; }
 
     struct TFTPData send_data;
@@ -183,7 +183,7 @@ void Tftp::sendDataMsg(short blockno, QHostAddress sender, quint16 senderPort)
     if(bytes != data_packet_size) { isRun=false; return; }
     qDebug()<<"WRQ : "<<bytes<<" bytes had been sent!";
 
-    if(data_size >= 0 && data_size < BLOCKSIZE)
+    if(data_size >= 0 && data_size < TFTPBLOCKSIZE)
     {
         sFile->close();
         wrq_block_no = 0;

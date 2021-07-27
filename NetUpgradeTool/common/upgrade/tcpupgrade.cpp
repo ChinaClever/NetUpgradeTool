@@ -30,12 +30,12 @@ bool TcpUpgrade::upload(const QString &file, const QString &ip)
 
     for(int i=0; i<10*60; ++i) {
         if(mStatus) break;
-        else sleep(1);        
+        else sleep(1);
     }
 
     bool ret = false;
     if(mStatus > 0) ret = true;
-     breakSent();
+    breakSent();
 
     return ret;
 }
@@ -56,17 +56,27 @@ void TcpUpgrade::connectSlot(int step)
         break;
 
     case UP_CMD_PWDERR:
+#if LANGUAGE==1
+        msg = tr(" Username error，transmission failure!!");
+#else
         msg = tr(" 用户名错误，传输失败!!");
-        // msg = tr(" username error，transmission failure!!");
+#endif
         break;
 
     case UP_CMD_DIS: // 只有当断开、链接错误时，才发出相应信号出来
     case UP_CMD_ERR:
-         msg = tr(" 传输失败，请检查网络!!");
-        //msg = tr(" transmission failure，please check network!!");
+#if LANGUAGE==1
+        msg = tr(" Transmission failure，please check network!!");
+#else
+        msg = tr(" 传输失败，请检查网络!!");
+#endif
         break;
     case UP_CMD_CRCERR:
+#if LANGUAGE==1
+        msg = tr(" CRC Verification failed!!");
+#else
         msg = tr(" CRC校验失败!!");
+#endif
         break;
     case UP_CMD_CHIPERR:
 #if LANGUAGE==1

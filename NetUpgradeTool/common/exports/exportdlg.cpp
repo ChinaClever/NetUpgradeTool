@@ -13,6 +13,15 @@ ExportDlg::ExportDlg(QWidget *parent) :
 
     timer = new QTimer(this);
     connect( timer, SIGNAL(timeout()),this, SLOT(timeoutDone()));
+#if LANGUAGE==1
+    ui->titleLab->setText("File export");
+    ui->label->setText("Save path");
+    ui->label_2->setText("File name");
+    ui->pushButton->setText("Open");
+    ui->exportBtn->setText("Export");
+    ui->quitBtn->setText("Quit");
+#endif
+
 }
 
 ExportDlg::~ExportDlg()
@@ -22,8 +31,12 @@ ExportDlg::~ExportDlg()
 
 void ExportDlg::on_pushButton_clicked()
 {
+
+#if LANGUAGE==1
+    QFileDialog dlg(this,tr("Path select"));
+#else
     QFileDialog dlg(this,tr("路径选择"));
-    //QFileDialog dlg(this,tr("path select"));
+#endif
     dlg.setFileMode(QFileDialog::DirectoryOnly);
     dlg.setDirectory("E:");
     if(dlg.exec() == QDialog::Accepted) {
@@ -40,16 +53,33 @@ void ExportDlg::on_pushButton_clicked()
 bool ExportDlg::checkInput()
 {
     QString str = ui->pathEdit->text();
+#if LANGUAGE==1
+    if(str.isEmpty()) {
+        CriticalMsgBox box(this, tr("The export path isn't empty！"));
+        return false;
+    }
+
+    str = ui->fileEdit->text();
+    if(str.isEmpty()) {
+        CriticalMsgBox box(this, tr("The export file name isn't empty！"));
+        return false;
+    }
+
+    str = ui->pathEdit->text() + ui->fileEdit->text() +".xlsx";
+    QFile file(str);
+    if (file.exists()){
+        CriticalMsgBox box(this, str + tr("\nFile already exists！!"));
+        return false;
+    }
+#else
     if(str.isEmpty()) {
         CriticalMsgBox box(this, tr("导出路径不能为空！"));
-        //CriticalMsgBox box(this, tr("the export path isn't empty！"));
         return false;
     }
 
     str = ui->fileEdit->text();
     if(str.isEmpty()) {
         CriticalMsgBox box(this, tr("导出文件名不能为空！"));
-        //CriticalMsgBox box(this, tr("the export file name isn't empty！"));
         return false;
     }
 
@@ -57,9 +87,9 @@ bool ExportDlg::checkInput()
     QFile file(str);
     if (file.exists()){
         CriticalMsgBox box(this, str + tr("\n文件已存在！!"));
-        //CriticalMsgBox box(this, str + tr("\nfile already exists！!"));
         return false;
     }
+#endif
 
     return true;
 }
@@ -71,8 +101,11 @@ void ExportDlg::exportDone()
 {
     ui->exportBtn->setEnabled(true);
     ui->quitBtn->setEnabled(true);
+#if LANGUAGE==1
+    InfoMsgBox box(this, tr("\nExport successful!!\n"));
+#else
     InfoMsgBox box(this, tr("\n导出完成!!\n"));
-    //InfoMsgBox box(this, tr("\nexport successful!!\n"));
+#endif
 }
 
 
@@ -105,10 +138,14 @@ void ExportDlg::on_exportBtn_clicked()
 void ExportDlg::on_quitBtn_clicked()
 {
     if(!timer->isActive())
-    this->close();
+        this->close();
     else
     {
+
+#if LANGUAGE==1
+        InfoMsgBox box(this, tr("\nExport is not complete and cannot be shut down!!\n"));
+#else
         InfoMsgBox box(this, tr("\n导出还没有完成，还不能关闭!!\n"));
-        //InfoMsgBox box(this, tr("\nExport is not complete and cannot be shut down!!\n"));
+#endif
     }
 }

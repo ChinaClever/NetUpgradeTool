@@ -25,6 +25,7 @@ TcpClient::TcpClient(QObject *parent) : QObject(parent)
     isNew = false;
     isConnect = false;
     isOver = false;
+    readCount = 0;
 
     mTcpSocket = new QTcpSocket(this);
     connect(mTcpSocket, SIGNAL(connected()), this,SLOT(connectedSlot()));
@@ -56,6 +57,7 @@ void TcpClient::closeConnect(void)
         mSentData.clear();
         isConnect = false;
         mTcpSocket->close(); //取消已有的连接
+        readCount = 0;
     }
 }
 
@@ -82,6 +84,7 @@ void TcpClient::newConnectSlot()
         mTcpSocket->connectToHost(host,TCP_PORT);//连接到主机，机地址和端口号
         mSentData.clear();
         isNew = false;
+        readCount = 0;
     }
 }
 
@@ -105,7 +108,7 @@ bool TcpClient::sentMessage(uchar *buf,  int len)
  * @return true
  */
 bool TcpClient::sentMessage(const QByteArray &data)
-{   
+{
     QReadLocker locker(mLock); /*获取线程状态*/
     mSentData.append(data);
 
@@ -134,7 +137,6 @@ int TcpClient::writeMessage(char *buf, int len)
 int TcpClient::writeMessage(QByteArray &data)
 {
     int rtn = -1;
-
     if(isConnect)
     {
         QReadLocker locker(mLock); /*获取线程状态*/
@@ -142,13 +144,11 @@ int TcpClient::writeMessage(QByteArray &data)
         {
             rtn = mTcpSocket->write(data);
             if(rtn != data.size()) {
-                 emit connectSig(UP_CMD_ERR);
+                emit connectSig(UP_CMD_ERR);
             }
             mTcpSocket->flush();
             mTcpSocket->waitForBytesWritten();
         }
-
-        qDebug() << "BBBBBBBB" << rtn;
     }
 
     return rtn;

@@ -12,10 +12,16 @@ DevSelectWid::DevSelectWid(QWidget *parent) :
     timer->start(200);
     connect(timer, SIGNAL(timeout()),this, SLOT(timeoutDone()));
     mCount = 1;
-    //    ui->groupBox->setTitle("Type Of Equipment Selection Zone");
-    //    ui->label->setText("username");
-    //    ui->label_2->setText("password");
-    //    ui->okBtn->setText("confirm");
+    ui->ChooseTypeBox->setCurrentIndex(mData->devtype);
+#if LANGUAGE==1
+    ui->groupBox->setTitle("Type Of Equipment Selection Zone");
+    ui->label->setText("Username");
+    ui->label_2->setText("Password");
+    ui->okBtn->setText("Confirm");
+    ui->label_3->setText("Upgrade mode");
+#endif
+    if(!mData->devtype)
+        setenabled(false);
 }
 
 DevSelectWid::~DevSelectWid()
@@ -34,13 +40,19 @@ bool DevSelectWid::checkInput()
     QString str;
     QString user =ui->userEdit->text();
     if(user.isEmpty())
+#if LANGUAGE==1
+        str = tr("Username is empty，please re-enter!!");
+#else
         str = tr("用户名不能为空，请重新输入!!");
-    //str = tr("Username is empty，please re-enter!!");
+#endif
 
     QString pwd = ui->pwdEdit->text();
     if(pwd.isEmpty())
+#if LANGUAGE==1
+        str = tr("Password is empty，please re-enter!!");
+#else
         str = tr("密码不能为空，请重新输入!!");
-    //str = tr("Password is empty，please re-enter!!");
+#endif
 
     bool ret = true;
     if(str.isEmpty()) {
@@ -63,8 +75,11 @@ void DevSelectWid::setenabled(bool e)
 void DevSelectWid::on_okBtn_clicked()
 {
     bool en = false;
+#if LANGUAGE==1
+    QString str = tr("Modify");
+#else
     QString str = tr("修改");
-    //QString str = tr("modify");
+#endif
     if(mCount++ %2) {
         if(mData->devtype) {//只有当升级方式为tcp时，才需要账号和密码
             if(!checkInput()) {
@@ -73,8 +88,11 @@ void DevSelectWid::on_okBtn_clicked()
         }
     } else {
         en = true;
+#if LANGUAGE==1
+        str = tr("Confirm");
+#else
         str = tr("确认");
-        //str = tr("confirm");
+#endif
     }
 
     setenabled(en);

@@ -8,8 +8,11 @@ OksTabWid::OksTabWid(QWidget *parent) : ErrsTabWid(parent)
 
 void OksTabWid::initWid()
 {
+#if LANGUAGE==1
+    QString title = tr("Successful list");
+#else
     QString title = tr("升级成功列表");
-    //QString title = tr("successful list");
+#endif
     QStringList header;
     header <<title;
     //header <<tr("successful list");
@@ -35,7 +38,7 @@ void OksTabWid::languageChanged()
     }
     else
     {
-        mheader<<"successful list";
+        mheader<<"Successful list";
     }
     count++;
     changeHeader(mheader);
