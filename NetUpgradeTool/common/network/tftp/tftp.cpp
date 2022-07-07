@@ -57,7 +57,7 @@ void Tftp::initSocket()
 {
     bool ret = false;
     do {
-        ret = udpSocketClient->bind(QHostAddress::Any, mPort++);
+        ret = udpSocketClient->bind(QHostAddress::AnyIPv4, mPort++);
         if(!ret) qDebug() << "udpSocketClient bind err" << mPort-1;
     } while(ret == false);
     connect(udpSocketClient, SIGNAL(readyRead()), this, SLOT(readPendingDatagrams()));
